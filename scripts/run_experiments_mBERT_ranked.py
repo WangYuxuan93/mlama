@@ -18,12 +18,19 @@ from collections import defaultdict
 import json
 
 LMs = [
+    #{
+    #    "lm": "bert",
+    #    "label": "mbert_base",
+    #    "models_names": ["bert"],
+    #    "bert_model_name": "bert-base-multilingual-cased",
+    #    "bert_model_dir": None
+    #},
     {
         "lm": "bert",
-        "label": "mbert_base",
+        "label": "bert_base",
         "models_names": ["bert"],
-        "bert_model_name": "bert-base-multilingual-cased",
-        "bert_model_dir": None
+        "bert_model_name": "bert-base-cased",
+        "bert_model_dir": None,
     },
 ]
 
@@ -43,13 +50,16 @@ def run_experiments(
 ):
     model = None
     pp = pprint.PrettyPrinter(width=41, compact=True)
-    if "P" in relations[0]["relation"]:
-        object_path = "./data/TREx_multilingual_objects/" + language + ".json"
-    else:
-        object_path = "./data/GoogleRE_objects/" + language + ".json"
-
+    #if "P" in relations[0]["relation"]:
+    object_path = "./data/TREx_multilingual_objects/" + language + ".json"
     with open(object_path) as f:
         candidates = json.load(f)
+    
+    object_path = "./data/GoogleRE_objects/" + language + ".json"
+
+    with open(object_path) as f:
+        candidates_ = json.load(f)
+    candidates.update(candidates_)
 
     for relation in relations:
         pp.pprint(relation)
