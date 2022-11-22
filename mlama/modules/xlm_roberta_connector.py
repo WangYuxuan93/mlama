@@ -27,26 +27,26 @@ class XLMRoberta(Base_Connector):
     def __init__(self, args, vocab_subset = None):
         super().__init__()
 
-        bert_model_name = args.bert_model_name
-        dict_file = bert_model_name
+        model_name = args.model_name
+        #dict_file = model_name
 
         if args.bert_model_dir is not None:
             # load bert model from file
-            bert_model_name = str(args.bert_model_dir) + "/"
-            dict_file = bert_model_name+args.bert_vocab_name
-            self.dict_file = dict_file
-            print("loading BERT model from {}".format(bert_model_name))
+            model_name = str(args.bert_model_dir) + "/"
+            #dict_file = model_name+args.bert_vocab_name
+            #self.dict_file = dict_file
+            print("loading BERT model from {}".format(model_name))
         else:
             # load bert model from huggingface cache
             pass
 
         # When using a cased model, make sure to pass do_lower_case=False directly to BaseTokenizer
         do_lower_case = False
-        if 'uncased' in bert_model_name:
+        if 'uncased' in model_name:
             do_lower_case=True
         #print(do_lower_case)
         # Load pre-trained model tokenizer (vocabulary)
-        self.tokenizer = XLMRobertaTokenizer.from_pretrained(dict_file)
+        self.tokenizer = XLMRobertaTokenizer.from_pretrained(model_name)
 
         # original vocab
         self.map_indices = None
@@ -55,7 +55,7 @@ class XLMRoberta(Base_Connector):
 
         # Load pre-trained model (weights)
         # ... to get prediction/generation
-        self.masked_xlmr_model = XLMRobertaForMaskedLM.from_pretrained(bert_model_name)
+        self.masked_xlmr_model = XLMRobertaForMaskedLM.from_pretrained(model_name)
 
         self.masked_xlmr_model.eval()
 
