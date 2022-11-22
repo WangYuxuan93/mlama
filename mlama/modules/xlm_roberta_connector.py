@@ -27,7 +27,7 @@ class XLMRoberta(Base_Connector):
     def __init__(self, args, vocab_subset = None):
         super().__init__()
 
-        model_name = args.model_name
+        model_name = args.bert_model_name
         #dict_file = model_name
 
         if args.bert_model_dir is not None:
@@ -50,8 +50,8 @@ class XLMRoberta(Base_Connector):
 
         # original vocab
         self.map_indices = None
-        self.vocab = list(self.tokenizer.ids_to_tokens.values())
-        self._init_inverse_vocab()
+        #self.vocab = list(self.tokenizer.ids_to_tokens.values())
+        #self._init_inverse_vocab()
 
         # Load pre-trained model (weights)
         # ... to get prediction/generation
@@ -59,13 +59,13 @@ class XLMRoberta(Base_Connector):
 
         self.masked_xlmr_model.eval()
 
-        self.pad_id = self.inverse_vocab[BERT_PAD]
+        self.pad_id = self.tokenizer.pad_token_id #self.inverse_vocab[BERT_PAD]
 
-        self.unk_index = self.inverse_vocab[BERT_UNK]
+        self.unk_index = self.tokenizer.unk_token_id #self.inverse_vocab[BERT_UNK]
 
     def _tokenize(self, string):
         str = string.replace(BERT_MASK, XLMR_MASK)
-        tokenized_text = self.tokenizer.tokenize(string)
+        tokenized_text = self.tokenizer.tokenize(str)
         return tokenized_text
 
     def get_id(self, string):
@@ -165,6 +165,7 @@ class XLMRoberta(Base_Connector):
             token = tokenized_text[i]
             if token == XLMR_MASK:
                 masked_indices.append(i)
+        #print ("sent:{}\nmasked_indices:{}".format(tokenized_text, masked_indices))
 
         indexed_tokens = self.tokenizer.convert_tokens_to_ids(tokenized_text)
 
@@ -201,14 +202,16 @@ class XLMRoberta(Base_Connector):
             logger.debug("\n{}\n".format(tokenized_text_list))
 
         with torch.no_grad():
+            #print ("input_ids:\n", tokens_tensor)
             logits = self.masked_xlmr_model(
                 input_ids=tokens_tensor.to(self._model_device),
                 token_type_ids=segments_tensor.to(self._model_device),
                 attention_mask=attention_mask_tensor.to(self._model_device),
-            )
+            )[0]
+            #print ("logits:\n", logits)
 
             log_probs = F.log_softmax(logits, dim=-1).cpu()
-        #print(logits.shape)
+            #print(logits.shape)
         token_ids_list = []
         for indexed_string in tokens_tensor.numpy():
             token_ids_list.append(self.__get_token_ids_from_tensor(indexed_string))

@@ -167,7 +167,7 @@ def filter_samples(model, samples, vocab_subset, max_sentence_length, template):
 
             if obj_label_ids:
                 recostructed_word = " ".join(
-                    [model.vocab[x] for x in obj_label_ids]
+                    [model.tokenizer._convert_id_to_token(x) for x in obj_label_ids]
                 ).strip()
             else:
                 recostructed_word = None
@@ -301,6 +301,7 @@ def main(args, NUM_MASK, candidates, shuffle_data=True, model=None):
 
 
 
+
     all_samples, ret_msg = filter_samples(
         model, data, vocab_subset, args.max_sentence_length, args.template
     )
@@ -366,13 +367,12 @@ def main(args, NUM_MASK, candidates, shuffle_data=True, model=None):
                 masked_sentences.append(sentence)
                 sentences_b.append([sentence])
             samples_b[i]["masked_sentences"] = masked_sentences
-        print ("samples_b:{}\n{}".format(shuffle_data, samples_b))
-        exit()
+        #print ("samples_b:{}\n{}".format(shuffle_data, samples_b))
         (
             original_log_probs_list,
             token_ids_list,
             masked_indices_list,
-        ) = model.get_batch_generation(sentences_b, logger=logger)
+        ) = model.get_batch_generation(sentences_b, logger=logger, try_cuda=True)
 
         if vocab_subset is not None:
             # filter log_probs
@@ -400,6 +400,7 @@ def main(args, NUM_MASK, candidates, shuffle_data=True, model=None):
         original_log_probs_list = torch.reshape(original_log_probs_list, dim_reshape)
         filtered_log_probs_list = torch.reshape(filtered_log_probs_list, dim_reshape)
 
+        #print ("masked_indices_list:\n", masked_indices_list)
         masked_indices_list = np.reshape(np.array(masked_indices_list), (current_batch_size, int(len(masked_indices_list)/current_batch_size)))
         arguments = [
             {
