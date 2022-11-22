@@ -5,6 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 #
 from .bert_connector import Bert
+from .xlm_roberta_connector import XLMRoberta
 
 def build_model_by_name(lm, args, verbose=True):
     """Load a model by name and args.
@@ -13,7 +14,8 @@ def build_model_by_name(lm, args, verbose=True):
     model's initializator.
     """
     MODEL_NAME_TO_CLASS = dict(
-        bert=Bert
+        bert=Bert,
+        xlmr=XLMRoberta,
     )
     if lm not in MODEL_NAME_TO_CLASS:
         raise ValueError("Unrecognized Language Model: %s." % lm)

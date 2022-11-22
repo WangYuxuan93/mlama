@@ -1,53 +1,28 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
-# All rights reserved.
+# Copyright (c) Facebook, Inc. and its affiliates
+# # All rights reserved.
 #
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 #
 import torch
 import pytorch_pretrained_bert.tokenization as btok
-from pytorch_pretrained_bert import BertTokenizer, BertForMaskedLM, BasicTokenizer, BertModel
+#from pytorch_pretrained_bert import BertTokenizer, BertForMaskedLM, BasicTokenizer
+from transformers import (
+  BertTokenizer,
+  BertForMaskedLM,
+  XLMRobertaTokenizer,
+  XLMRobertaForMaskedLM,
+  #MEAEForMaskedLM,
+)
 
 import numpy as np
 from mlama.modules.base_connector import *
 import torch.nn.functional as F
 
+BERT_MASK = "[MASK]"
+XLMR_MASK = "<mask>"
 
-class CustomBaseTokenizer(BasicTokenizer):
-
-    def tokenize(self, text):
-        """Tokenizes a piece of text."""
-        text = self._clean_text(text)
-        # This was added on November 1st, 2018 for the multilingual and Chinese
-        # models. This is also applied to the English models now, but it doesn't
-        # matter since the English models were not trained on any Chinese data
-        # and generally don't have any Chinese data in them (there are Chinese
-        # characters in the vocabulary because Wikipedia does have some Chinese
-        # words in the English Wikipedia.).
-        text = self._tokenize_chinese_chars(text)
-        orig_tokens = btok.whitespace_tokenize(text)
-        split_tokens = []
-        for token in orig_tokens:
-
-            # pass MASK forward
-            if MASK in token:
-                split_tokens.append(MASK)
-                if token != MASK:
-                    remaining_chars = token.replace(MASK,"").strip()
-                    if remaining_chars:
-                        split_tokens.append(remaining_chars)
-                continue
-
-            if self.do_lower_case:
-                token = token.lower()
-                token = self._run_strip_accents(token)
-            split_tokens.extend(self._run_split_on_punc(token))
-
-        output_tokens = btok.whitespace_tokenize(" ".join(split_tokens))
-        return output_tokens
-
-
-class Bert(Base_Connector):
+class XLMRoberta(Base_Connector):
 
     def __init__(self, args, vocab_subset = None):
         super().__init__()
@@ -71,25 +46,18 @@ class Bert(Base_Connector):
             do_lower_case=True
         #print(do_lower_case)
         # Load pre-trained model tokenizer (vocabulary)
-        self.tokenizer = BertTokenizer.from_pretrained(dict_file)
+        self.tokenizer = XLMRobertaTokenizer.from_pretrained(dict_file)
 
         # original vocab
         self.map_indices = None
         self.vocab = list(self.tokenizer.ids_to_tokens.values())
         self._init_inverse_vocab()
 
-        # Add custom tokenizer to avoid splitting the ['MASK'] token
-        custom_basic_tokenizer = CustomBaseTokenizer(do_lower_case = do_lower_case)
-        self.tokenizer.basic_tokenizer = custom_basic_tokenizer
-
         # Load pre-trained model (weights)
         # ... to get prediction/generation
-        self.masked_bert_model = BertForMaskedLM.from_pretrained(bert_model_name)
+        self.masked_xlmr_model = XLMRobertaForMaskedLM.from_pretrained(bert_model_name)
 
-        self.masked_bert_model.eval()
-
-        # ... to get hidden states
-        self.bert_model = self.masked_bert_model.bert
+        self.masked_xlmr_model.eval()
 
         self.pad_id = self.inverse_vocab[BERT_PAD]
 
@@ -209,7 +177,7 @@ class Bert(Base_Connector):
         return token_ids
 
     def _cuda(self):
-        self.masked_bert_model.cuda()
+        self.masked_xlmr_model.cuda()
 
     def get_batch_generation(self, sentences_list, logger= None,
                              try_cuda=True):
@@ -225,7 +193,7 @@ class Bert(Base_Connector):
             logger.debug("\n{}\n".format(tokenized_text_list))
 
         with torch.no_grad():
-            logits = self.masked_bert_model(
+            logits = self.masked_xlmr_model(
                 input_ids=tokens_tensor.to(self._model_device),
                 token_type_ids=segments_tensor.to(self._model_device),
                 attention_mask=attention_mask_tensor.to(self._model_device),
@@ -250,7 +218,7 @@ class Bert(Base_Connector):
         tokens_tensor, segments_tensor, attention_mask_tensor, masked_indices_list, tokenized_text_list = self.__get_input_tensors_batch(sentences_list)
 
         with torch.no_grad():
-            all_encoder_layers, _ = self.bert_model(
+            all_encoder_layers, _ = self.masked_xlmr_model.roberta(
                 tokens_tensor.to(self._model_device),
                 segments_tensor.to(self._model_device))
 
