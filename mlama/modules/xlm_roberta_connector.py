@@ -63,8 +63,14 @@ class XLMRoberta(Base_Connector):
 
         self.unk_index = self.inverse_vocab[BERT_UNK]
 
-    def get_id(self, string):
+    def _tokenize(self, string):
+        str = string.replace(BERT_MASK, XLMR_MASK)
         tokenized_text = self.tokenizer.tokenize(string)
+        return tokenized_text
+
+    def get_id(self, string):
+        #tokenized_text = self.tokenizer.tokenize(string)
+        tokenized_text = self._tokenize(string)
         indexed_string = self.tokenizer.convert_tokens_to_ids(tokenized_text)
         if self.map_indices is not None:
             # map indices to subset of the vocabulary
@@ -125,20 +131,22 @@ class XLMRoberta(Base_Connector):
         if len(sentences) > 2:
             print(sentences)
             raise ValueError("BERT accepts maximum two sentences in input for each data point")
-
-        first_tokenized_sentence = self.tokenizer.tokenize(sentences[0])
+        
+        #first_tokenized_sentence = self.tokenizer.tokenize(sentences[0])
+        first_tokenized_sentence = self._tokenize(sentences[0])
         first_segment_id = np.zeros(len(first_tokenized_sentence), dtype=int).tolist()
 
         # add [SEP] token at the end
-        first_tokenized_sentence.append(BERT_SEP)
+        first_tokenized_sentence.append(ROBERTA_END_SENTENCE)
         first_segment_id.append(0)
 
         if len(sentences)>1 :
-            second_tokenized_sentece = self.tokenizer.tokenize(sentences[1])
+            #second_tokenized_sentece = self.tokenizer.tokenize(sentences[1])
+            second_tokenized_sentece = self._tokenize(sentences[1])
             second_segment_id = np.full(len(second_tokenized_sentece),1, dtype=int).tolist()
 
             # add [SEP] token at the end
-            second_tokenized_sentece.append(BERT_SEP)
+            second_tokenized_sentece.append(ROBERTA_END_SENTENCE)
             second_segment_id.append(1)
 
             tokenized_text = first_tokenized_sentence + second_tokenized_sentece
@@ -148,14 +156,14 @@ class XLMRoberta(Base_Connector):
             segments_ids = first_segment_id
 
         # add [CLS] token at the beginning
-        tokenized_text.insert(0,BERT_CLS)
+        tokenized_text.insert(0,ROBERTA_START_SENTENCE)
         segments_ids.insert(0,0)
 
         # look for masked indices
         masked_indices = []
         for i in range(len(tokenized_text)):
             token = tokenized_text[i]
-            if token == MASK:
+            if token == XLMR_MASK:
                 masked_indices.append(i)
 
         indexed_tokens = self.tokenizer.convert_tokens_to_ids(tokenized_text)
