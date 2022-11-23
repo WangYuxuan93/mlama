@@ -158,8 +158,9 @@ def get_MultiLingual_parameters(data_path_pre="./data/mlama1.1/", language=""):
     return relations, data_path_pre, data_path_post, language"""
 
 
-def run_all_LMs(parameters):
-    for ip in LMs:
+def run_all_LMs(parameters, data):
+    #for ip in LMs:
+    for ip in data:
         print(ip["label"])
         run_experiments(*parameters, input_param=ip)
 
@@ -167,13 +168,16 @@ def run_all_LMs(parameters):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--lang', '-l', type=str, default="fr", help='language')
+    parser.add_argument('--model', '-m', type=str, help='path to model information json file')
 
     args = parser.parse_args()
 
     l = args.lang
     print(l)
     parameters = get_MultiLingual_parameters(language=l)
-    run_all_LMs(parameters)
+    with open(args.model, "r") as f:
+        data = json.load(f)
+    run_all_LMs(parameters, data)
 
 if __name__ == "__main__":
     main()

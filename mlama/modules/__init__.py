@@ -8,6 +8,10 @@ from .bert_connector import Bert
 from .bert_connector2 import Bert2
 from .xlm_roberta_connector import XLMRoberta
 
+# bert is loaded with Bert from pytorch_pretrained_bert
+# bert2 is loaded with Bert from transformers
+
+
 def build_model_by_name(lm, args, verbose=True):
     """Load a model by name and args.
 

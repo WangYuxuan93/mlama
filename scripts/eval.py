@@ -3,8 +3,8 @@ import os
 import numpy as np
 
 problem = []
-f_out = open("./output/mbert_ranked.csv", "w")
-output_path = "./output/results/mbert_base/"
+f_out = open("./output/mbert-v2_ranked.csv", "w")
+output_path = "./output/results/mbert_base-v2/"
 path_compare = "./output/results/bert_base/en/"
 languages = list(os.walk(output_path))[0][1:-1][0]
 dict_languages_total = {}
