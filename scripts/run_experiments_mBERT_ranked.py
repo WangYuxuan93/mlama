@@ -18,20 +18,20 @@ from collections import defaultdict
 import json
 
 LMs = [
+    {
+        "lm": "bert2",
+        "label": "mbert_base-2",
+        "models_names": ["bert"],
+        "bert_model_name": "bert-base-multilingual-cased",
+        "bert_model_dir": None
+    },
     #{
     #    "lm": "bert",
-    #    "label": "mbert_base",
+    #    "label": "bert_base",
     #    "models_names": ["bert"],
-    #    "bert_model_name": "bert-base-multilingual-cased",
-    #    "bert_model_dir": None
+    #    "bert_model_name": "bert-base-cased",
+    #    "bert_model_dir": None,
     #},
-    {
-        "lm": "bert",
-        "label": "bert_base",
-        "models_names": ["bert"],
-        "bert_model_name": "bert-base-cased",
-        "bert_model_dir": None,
-    },
 ]
 
 

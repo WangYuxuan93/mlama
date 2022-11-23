@@ -366,8 +366,7 @@ def main(args, NUM_MASK, candidates, shuffle_data=True, model=None):
                 masked_sentences.append(sentence)
                 sentences_b.append([sentence])
             samples_b[i]["masked_sentences"] = masked_sentences
-        print ("samples_b:{}\n{}".format(shuffle_data, samples_b))
-        exit()
+        #print ("samples_b:{}\n{}".format(shuffle_data, samples_b))
         (
             original_log_probs_list,
             token_ids_list,

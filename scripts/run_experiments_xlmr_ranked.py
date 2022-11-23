@@ -27,10 +27,11 @@ LMs = [
     #},
     {
         "lm": "xlmr",
-        "label": "xlmr_base",
+        "label": "xlmr_base-v0",
         "models_names": ["xlmr"],
         "bert_model_name": "xlm-roberta-base",
-        "bert_model_dir": "/work/ptm/transformers/xlm-roberta-base",
+        "bert_model_dir": "/work/experiments/mlm/models/xlm-roberta-v0-1000000/xlm-roberta-base",
+        #"bert_model_dir": "/work/ptm/transformers/xlm-roberta-base",
     },
 ]
 
