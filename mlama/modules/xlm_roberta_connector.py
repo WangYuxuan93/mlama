@@ -12,7 +12,7 @@ from transformers import (
   BertForMaskedLM,
   XLMRobertaTokenizer,
   XLMRobertaForMaskedLM,
-  #MEAEForMaskedLM,
+  MEAEForMaskedLM,
 )
 
 import numpy as np
@@ -21,6 +21,7 @@ import torch.nn.functional as F
 
 BERT_MASK = "[MASK]"
 XLMR_MASK = "<mask>"
+
 
 class XLMRoberta(Base_Connector):
 
@@ -241,3 +242,44 @@ class XLMRoberta(Base_Connector):
         # of each attention block (i.e. 12 full sequences for BERT-base, 24 for BERT-large), each
         # encoded-hidden-state is a torch.FloatTensor of size [batch_size, sequence_length, hidden_size]
         return all_encoder_layers, sentence_lengths, tokenized_text_list
+
+
+class MEAE(XLMRoberta):
+    def __init__(self, args, vocab_subset = None):
+        super().__init__()
+
+        model_name = args.bert_model_name
+        #dict_file = model_name
+
+        if args.bert_model_dir is not None:
+            # load bert model from file
+            model_name = str(args.bert_model_dir) + "/"
+            #dict_file = model_name+args.bert_vocab_name
+            #self.dict_file = dict_file
+            print("loading BERT model from {}".format(model_name))
+        else:
+            # load bert model from huggingface cache
+            pass
+
+        # When using a cased model, make sure to pass do_lower_case=False directly to BaseTokenizer
+        do_lower_case = False
+        if 'uncased' in model_name:
+            do_lower_case=True
+        #print(do_lower_case)
+        # Load pre-trained model tokenizer (vocabulary)
+        self.tokenizer = XLMRobertaTokenizer.from_pretrained(model_name)
+
+        # original vocab
+        self.map_indices = None
+        #self.vocab = list(self.tokenizer.ids_to_tokens.values())
+        #self._init_inverse_vocab()
+
+        # Load pre-trained model (weights)
+        # ... to get prediction/generation
+        self.masked_xlmr_model = MEAEForMaskedLM.from_pretrained(model_name)
+
+        self.masked_xlmr_model.eval()
+
+        self.pad_id = self.tokenizer.pad_token_id #self.inverse_vocab[BERT_PAD]
+
+        self.unk_index = self.tokenizer.unk_token_id #self.inverse_vocab[BERT_UNK]

@@ -7,6 +7,7 @@
 from .bert_connector import Bert
 from .bert_connector2 import Bert2
 from .xlm_roberta_connector import XLMRoberta
+from .xlm_roberta_connector import MEAE
 
 # bert is loaded with Bert from pytorch_pretrained_bert
 # bert2 is loaded with Bert from transformers
@@ -22,6 +23,7 @@ def build_model_by_name(lm, args, verbose=True):
         bert=Bert,
         bert2=Bert2,
         xlmr=XLMRoberta,
+        meae=MEAE,
     )
     if lm not in MODEL_NAME_TO_CLASS:
         raise ValueError("Unrecognized Language Model: %s." % lm)
