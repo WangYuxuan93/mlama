@@ -21,8 +21,9 @@ def whitespace_tokenize(text):
 
 class CustomBaseTokenizer(BasicTokenizer):
 
-    def tokenize(self, text):
+    def tokenize(self, text, never_split=None):
         """Tokenizes a piece of text."""
+        never_split = self.never_split + (never_split if never_split is not None else [])
         text = self._clean_text(text)
         # This was added on November 1st, 2018 for the multilingual and Chinese
         # models. This is also applied to the English models now, but it doesn't
@@ -43,11 +44,11 @@ class CustomBaseTokenizer(BasicTokenizer):
                     if remaining_chars:
                         split_tokens.append(remaining_chars)
                 continue
-
-            if self.do_lower_case:
+            
+            if self.do_lower_case and token not in never_split:
                 token = token.lower()
                 token = self._run_strip_accents(token)
-            split_tokens.extend(self._run_split_on_punc(token))
+            split_tokens.extend(self._run_split_on_punc(token, never_split))
 
         output_tokens = whitespace_tokenize(" ".join(split_tokens))
         return output_tokens
