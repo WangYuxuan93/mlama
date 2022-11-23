@@ -232,7 +232,7 @@ class Bert(Base_Connector):
             )
 
             log_probs = F.log_softmax(logits, dim=-1).cpu()
-        print(logits.shape)
+        #print(logits.shape)
         token_ids_list = []
         for indexed_string in tokens_tensor.numpy():
             token_ids_list.append(self.__get_token_ids_from_tensor(indexed_string))

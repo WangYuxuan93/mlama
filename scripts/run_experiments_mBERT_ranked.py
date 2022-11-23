@@ -20,8 +20,8 @@ import json
 LMs = [
     {
         "lm": "bert2",
-        "label": "mbert_base-2",
-        "models_names": ["bert"],
+        "label": "mbert_base-v2",
+        "models_names": ["bert2"],
         "bert_model_name": "bert-base-multilingual-cased",
         "bert_model_dir": None
     },

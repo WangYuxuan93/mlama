@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 #
 from .bert_connector import Bert
-from .bert_connector2 import Bert as Bert2
+from .bert_connector2 import Bert2
 from .xlm_roberta_connector import XLMRoberta
 
 def build_model_by_name(lm, args, verbose=True):
