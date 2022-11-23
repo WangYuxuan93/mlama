@@ -5,6 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 #
 from .bert_connector import Bert
+from .bert_connector2 import Bert as Bert2
 from .xlm_roberta_connector import XLMRoberta
 
 def build_model_by_name(lm, args, verbose=True):
@@ -15,6 +16,7 @@ def build_model_by_name(lm, args, verbose=True):
     """
     MODEL_NAME_TO_CLASS = dict(
         bert=Bert,
+        bert2=Bert2,
         xlmr=XLMRoberta,
     )
     if lm not in MODEL_NAME_TO_CLASS:
