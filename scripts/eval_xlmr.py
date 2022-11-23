@@ -3,9 +3,9 @@ import os
 import numpy as np
 
 problem = []
-f_out = open("./output/mbert_ranked.csv", "w")
-output_path = "./output/results/mbert_base/"
-path_compare = "./output/results/bert_base/en/"
+f_out = open("./output/xlmr_ranked.csv", "w")
+output_path = "./output/results/xlmr_base/"
+path_compare = "./output/results/mbert_base/"
 languages = list(os.walk(output_path))[0][1:-1][0]
 dict_languages_total = {}
 dict_languages_P = {}
@@ -32,7 +32,7 @@ for lang in languages:
        with open(output_path + lang + "/" +  relation + "/" + 'result.pkl', 'rb') as f:
             data = pickle.load(f)
 
-       with open(path_compare +  relation + "/" + 'result.pkl', 'rb') as f:
+       with open(path_compare + lang + "/" +  relation + "/" + 'result.pkl', 'rb') as f:
             data_eng = pickle.load(f)
 
        if len(data["list_of_results"]) >0:
