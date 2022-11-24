@@ -36,7 +36,7 @@ class XLMRoberta(Base_Connector):
             model_name = str(args.bert_model_dir) + "/"
             #dict_file = model_name+args.bert_vocab_name
             #self.dict_file = dict_file
-            print("loading BERT model from {}".format(model_name))
+            print("loading XLMR model from {}".format(model_name))
         else:
             # load bert model from huggingface cache
             pass
@@ -246,7 +246,9 @@ class XLMRoberta(Base_Connector):
 
 class MEAE(XLMRoberta):
     def __init__(self, args, vocab_subset = None):
-        super().__init__()
+        #super().__init__()
+        self._model_device = 'cpu'
+        self.vocab = None
 
         model_name = args.bert_model_name
         #dict_file = model_name
@@ -256,7 +258,7 @@ class MEAE(XLMRoberta):
             model_name = str(args.bert_model_dir) + "/"
             #dict_file = model_name+args.bert_vocab_name
             #self.dict_file = dict_file
-            print("loading BERT model from {}".format(model_name))
+            print("loading MEAE model from {}".format(model_name))
         else:
             # load bert model from huggingface cache
             pass
