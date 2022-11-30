@@ -1,0 +1,9 @@
+[
+  {
+    "lm": "xlmr",
+    "label": "xlmr_base-conv",
+    "models_names": ["xlmr"],
+    "bert_model_name": "xlm-roberta-base",
+    "bert_model_dir": "/work/ptm/tf_from_fs/xlm-roberta-base"
+  }
+]

@@ -1,0 +1,9 @@
+[
+  {
+    "lm": "meae",
+    "label": "meae_base-mlm-10000",
+    "models_names": ["meae"],
+    "bert_model_name": "meae-base",
+    "bert_model_dir": "/work/experiments/aug/models/all_loss-add_to_all-mlm-v0-1000000/meae-base"
+  }
+]

@@ -1,7 +1,7 @@
 function run()
 {
   lan=$1
-  model="/work/codes/mlama/info/xlmr.json"
+  model="/work/codes/mlama/info/xlmr-mlm.json"
   cmd="python scripts/run_experiments_xlmr_ranked.py -l $lan -m $model"
   echo $cmd
   $cmd

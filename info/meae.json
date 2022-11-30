@@ -1,9 +1,9 @@
 [
   {
     "lm": "meae",
-    "label": "meae_base",
+    "label": "meae_base-10000",
     "models_names": ["meae"],
     "bert_model_name": "meae-base",
-    "bert_model_dir": "/work/experiments/aug/models/all_loss-add_to_all-v0-1000000/meae-base"
+    "bert_model_dir": "/work/experiments/models/all_loss-add_to_all-stage0-10000/meae-base"
   }
 ]
